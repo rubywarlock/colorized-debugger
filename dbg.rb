@@ -5,52 +5,52 @@ require_relative 'colors'
 module DbgModule
   class Background
     include Colors
-  
+
     attr_accessor :show
-    
+
     def initialize
       @color = black
       @show = false
     end
-  
+
     def show!
       @show = !@show
     end
   end
-  
+
   class Form
     include Colors
-  
+
     attr_accessor :background, :body, :text_array, :last_color
-  
+
     def initialize
       @text_array = []
     end
-  
+
     def bg
       @background ||= Background.new
     end
-  
+
     def pp
       @text_array[-1] = PP.pp(@text_array[-1], output_string = "").chomp
-  
+
       self
     end
-  
+
     def add(text)
       @text_array.append text; self
     end
-  
+
     def out
       while @text_array.size > 0 do
         puts @text_array.shift
       end
     end
-  
+
     def print
       puts @text_array.pop(@text_array.size).join(' ')
     end
-  
+
     def colorize(value, color_name)
       if @background&.show
         Rainbow(value).send(color_name).bg(@background.color)
@@ -59,17 +59,17 @@ module DbgModule
       end
     end
   end
-  
+
   class Body < Form
     COLORS.each do |color_name|
       define_method(color_name) do
         @last_color = color_name
-  
+
         @text_array[-1] = colorize(@text_array[-1], color_name)
         self
       end
     end
-  
+
     def sep(symbol = '-', size = 98)
       add(symbol * size)
       self
@@ -104,7 +104,7 @@ module DbgModule
       puts "DBG ERROR: #{e.message}"
       puts '*' * 50
     end
-  
+
     def caller(data:, scan: '_spec.rb')
       add(data.select { |e| e.scan(scan).first.present? }).pp
       @text_array[-1] = "caller:\n#{@text_array[-1]}"
@@ -115,8 +115,6 @@ end
 
 class Dbg
   include DbgModule
-  
-
 
   def self.log
     @log ||= Body.new

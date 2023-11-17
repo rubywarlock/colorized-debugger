@@ -75,6 +75,11 @@ module DbgModule
       self
     end
 
+    def short_sep(symbol = '-', size = 57)
+      add(symbol * size)
+      self
+    end
+
     def title(title, text_color = 'darkgoldenrod', sep_color = 'yellow')
       Dbg.empty
       title_sep = "=" * 98

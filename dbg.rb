@@ -52,11 +52,11 @@ module DbgModule
     end
 
     def colorize(value, color_name)
-      if @background&.show
-        Rainbow(value).send(color_name).bg(@background.color)
-      else
+      # if @background&.show
+      #  Rainbow(value).send(color_name).bg(@background.color)
+      # else
         Rainbow(value).send(color_name)
-      end
+      # end
     end
   end
 
@@ -80,17 +80,39 @@ module DbgModule
       self
     end
 
+    def caller(data:, scan: '_spec.rb')
+      add(data.select { |e| e.scan(scan).first.present? }).pp
+      @text_array[-1] = "caller:\n#{@text_array[-1]}"
+      self
+    end
+
+    def head(text, text_color = 'slateblue', sep_color = 'slateblue')
+      header(text, text_color, sep_color, with_sep = false)
+    end
+
     def title(title, text_color = 'darkgoldenrod', sep_color = 'yellow')
       Dbg.empty
-      title_sep = "=" * 98
-      title_size = title.length
 
-      half_title_size = ((title_sep.length - title_size) / 2) - 1
+      header(title, text_color, sep_color)
+    end
+
+    private
+
+    def header(text, text_color, sep_color, with_sep = true)
+      max_sep = "=" * 98
+
+      if with_sep
+        add(max_sep).send(sep_color.to_sym).out
+      end
+
+      title_size = text.length
+
+      half_title_size = ((max_sep.length - title_size) / 2) - 1
       total_title_size = title_size + (half_title_size * 2) + 2
 
       last_half_title_size =
         if total_title_size.odd?
-          if total_title_size > title_sep.length
+          if total_title_size > max_sep.length
             half_title_size - 1
           else
             half_title_size + 1
@@ -100,20 +122,14 @@ module DbgModule
         end
 
       half_title = "=" * half_title_size
-      add(title_sep).send(sep_color.to_sym).out
+
       add(half_title.rjust(half_title_size, "=")).send(sep_color.to_sym)
-      add(title).send(text_color.to_sym)
+      add(text).send(text_color.to_sym)
       add(half_title.rjust(last_half_title_size, "=")).send(sep_color.to_sym).print
     rescue => e
       puts '*' * 50
       puts "DBG ERROR: #{e.message}"
       puts '*' * 50
-    end
-
-    def caller(data:, scan: '_spec.rb')
-      add(data.select { |e| e.scan(scan).first.present? }).pp
-      @text_array[-1] = "caller:\n#{@text_array[-1]}"
-      self
     end
   end
 end

@@ -1,6 +1,7 @@
 require 'rainbow'
 require 'pp'
 require_relative 'colors'
+require_relative 'counter'
 
 module DbgModule
   class Background
@@ -158,6 +159,10 @@ class Dbg
   def self.empty
     puts
     self
+  end
+
+  def self.counter
+    @@counter ||= Counter.new
   end
 
   def self.list_colors

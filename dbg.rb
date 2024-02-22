@@ -39,17 +39,22 @@ module DbgModule
     end
 
     def add(text)
-      @text_array.append text; self
+      @text_array.append text
+      self
     end
 
     def out
       while @text_array.size > 0 do
         puts @text_array.shift
       end
+
+      @log
     end
 
     def print
       puts @text_array.pop(@text_array.size).join(' ')
+
+      @log
     end
 
     def colorize(value, color_name)
@@ -71,8 +76,13 @@ module DbgModule
       end
     end
 
-    def sep(symbol = '-', size = 98)
-      add(symbol * size)
+    def sep(symbol: '-', size: 98, color: 'yellow')
+      default_sep = symbol * size
+
+      colorized_sep = colorize(default_sep, color)
+
+      add(colorized_sep)
+
       self
     end
 

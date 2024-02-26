@@ -86,6 +86,21 @@ module DbgModule
       self
     end
 
+    def step(number:, symbol: '-', size: 2, prefix_color: 'cyan', step_color: 'magenta')
+      out unless @text_array.blank?
+
+      default_prefix = symbol * size
+      default_step = "# #{number}"
+
+      colorized_prefix = colorize(default_prefix, prefix_color)
+      add(colorized_prefix)
+
+      colorized_step = colorize(default_step, step_color)
+      add(colorized_step)
+
+      print
+    end
+
     def short_sep(symbol = '-', size = 57)
       add(symbol * size)
       self
@@ -146,6 +161,8 @@ module DbgModule
 end
 
 class Dbg
+  cattr_accessor :counter
+
   include DbgModule
 
   def self.log
